@@ -61,7 +61,11 @@ public class RevocationVerificationManager {
             throws CertificateVerificationException {
 
         X509Certificate[] convertedCertificates = convert(peerCertificates);
+        verifyRevocationStatus(convertedCertificates);
+    }
 
+    public void verifyRevocationStatus(X509Certificate[] peerCertificates)
+            throws CertificateVerificationException {
         long start = System.currentTimeMillis();
 
         OCSPCache ocspCache = OCSPCache.getCache();
@@ -73,7 +77,7 @@ public class RevocationVerificationManager {
 
         for (RevocationVerifier verifier : verifiers) {
             try {
-                CertificatePathValidator pathValidator = new CertificatePathValidator(convertedCertificates, verifier);
+                CertificatePathValidator pathValidator = new CertificatePathValidator(peerCertificates, verifier);
                 pathValidator.validatePath();
                 log.info("Path verification Successful. Took " + (System.currentTimeMillis() - start) + " ms.");
                 return;
